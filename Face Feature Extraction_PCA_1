@@ -1,0 +1,50 @@
+from sklearn.datasets import fetch_lfw_people
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+
+import matplotlib.pyplot as plt  
+import numpy as np
+
+lfw_people = fetch_lfw_people(min_faces_per_person = 70, resize = 0.4)
+X= lfw_people.data
+y=lfw_people.target
+print(X.shape)
+
+pca=PCA(n_components=120)
+X_transformed=pca.fit_transform(X)
+print(X_transformed.shape)
+
+print("Sample Data point after applying PCA\n", X_transformed[0])
+
+n_samples, h, w = lfw_people.images.shape
+n_features = X.shape[1]
+print(n_samples,n_features)
+
+y = lfw_people.target
+target_names = lfw_people.target_names
+n_classes = target_names.shape[0]
+print(n_classes)
+
+#training and test dataset in 80:20 ratio
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size = 0.2, random_state = 42)
+print("size of training Data is % d and Testing Data is % d" %(
+        y_train.shape[0], y_test.shape[0]))
+        
+       
+n_components = 150
+pca = PCA(n_components = n_components, svd_solver ='randomized',
+          whiten = True).fit(X_train)
+  
+eigenfaces = pca.components_.reshape((n_components, h, w))
+  
+print("Projecting the input data on the eigenfaces orthonormal basis")
+X_train_pca = pca.transform(X_train)
+X_test_pca = pca.transform(X_test)
+
+
+
+print("Sample Data point after applying PCA\n", X_train_pca[0])
+print("-----------------------------------------------------")
+print("Dimesnsions of training set = % s and Test Set = % s"%(
+        X_train.shape, X_test.shape))
